@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mq-pressure-generator-consumer
+  name: mq-workload-generator-producer
   namespace: automq-tenant-default
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/component: producer
-      app.kubernetes.io/instance: rocketmq
+      app.kubernetes.io/instance: mq-workload-generator
   template:
     metadata:
       labels:
         app.kubernetes.io/component: producer
-        app.kubernetes.io/instance: rocketmq
+        app.kubernetes.io/instance: mq-workload-generator
     spec:
       containers:
-      - name: mq-pressure-generator
-        image: "swr.cn-east-3.myhuaweicloud.com/hello_corp/mq-pressure:0.1.0"
+      - name: producer
+        image: "swr.cn-east-3.myhuaweicloud.com/hello_corp/mq-workload-generator:0.1.0"
         env:
           - name: MODE
-            value: "consumer"
+            value: "producer"
           - name: PARALLELISM
-            value: "4"
+            value: "16"
           - name: QPS
-            value: "2500"
+            value: "1000"
           - name: ACCESS_POINT
             value: "svc-rocketmq-default-qmotudcabw-rocketmq5-proxy-internal:8080"
           - name: TOPIC

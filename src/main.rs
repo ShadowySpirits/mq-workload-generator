@@ -29,7 +29,7 @@ async fn main() {
     let option = PressureOption::parse();
 
     let logger = common::terminal_logger();
-    info!(logger, "start housekeeping, wait for server online");
+    info!(logger, "Begin generating workload and wait for the server to come online...");
 
     let producer_rate_limiter = RateLimiter::builder()
         .max(option.qps)
@@ -134,7 +134,7 @@ async fn start_producer(logger: &Logger, option: &PressureOption, rate_limiter: 
 async fn start_consumer(logger: &Logger, option: &PressureOption) {
     let mut consumer_option = SimpleConsumerOption::default();
     consumer_option.set_logging_format(LoggingFormat::Terminal);
-    consumer_option.set_consumer_group("automq_pressure");
+    consumer_option.set_consumer_group("automq_workload_generator");
     consumer_option.set_topics(vec![option.topic.clone()]);
 
     let mut client_option = ClientOption::default();

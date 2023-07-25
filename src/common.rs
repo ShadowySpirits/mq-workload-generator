@@ -22,7 +22,7 @@ pub struct PressureOption {
     #[arg(short, long, default_value_t = 100)]
     pub qps: usize,
 
-    /// Mode of the pressure test, available values: producer, consumer, producer_and_consumer
+    /// Mode of the workload test, available values: producer, consumer, producer_and_consumer
     #[arg(long, default_value = "producer_and_consumer")]
     pub mode: String,
 
