@@ -1,25 +1,30 @@
-use std::time::Instant;
-
 use clap::Parser;
+use slog::{Logger, o};
+use slog::Drain;
+use slog_async::OverflowStrategy;
 
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None)]
-pub struct HKOption {
-    /// Name of the cluster
-    #[arg(short, long)]
-    pub cluster: String,
+pub struct PressureOption {
+    /// Access point of the mq cluster
+    #[arg(short, long, default_value = "localhost:8081")]
+    pub access_point: String,
 
-    /// Prefix of the topic
+    /// Target topic
     #[arg(short, long)]
     pub topic: String,
 
-    /// Prefix of the topic
-    #[arg(long, default_value = "normal,delay,transaction")]
-    pub topic_type: String,
+    /// Number of the client
+    #[arg(short, long, default_value_t = 1)]
+    pub parallelism: i32,
 
-    /// Access point of the cluster
-    #[arg(long, default_value = "localhost:8081")]
-    pub access_point: String,
+    /// Send tps of the sum of all producers
+    #[arg(short, long, default_value_t = 100)]
+    pub qps: usize,
+
+    /// Mode of the pressure test, available values: producer, consumer, producer_and_consumer
+    #[arg(long, default_value = "producer_and_consumer")]
+    pub mode: String,
 
     /// Access Key to the topic
     #[arg(long, default_value = "")]
@@ -28,29 +33,18 @@ pub struct HKOption {
     /// Secret Key to the topic
     #[arg(long, default_value = "")]
     pub secret_key: String,
-
-    /// Broker replica of the cluster
-    #[arg(long, default_value_t = 1)]
-    pub replica: i32,
-
-    /// Filter expression
-    #[arg(long, default_value = "")]
-    pub tag: String,
-
-    /// Consume timeout in seconds, after which the message will be discarded
-    #[arg(long, default_value_t = 60)]
-    pub timeout: u64,
 }
 
-#[derive(Debug, Clone)]
-pub struct HKMessage {
-    pub message_id: String,
-    pub topic: String,
-    pub topic_type: String,
-    pub body: Option<Vec<u8>>,
-    pub tag: Option<String>,
-    pub message_group: Option<String>,
-    pub delivery_timestamp: Option<i64>,
-    pub born_timestamp: Instant,
-    pub consume_timestamp: Option<Instant>,
+pub(crate) fn terminal_logger() -> Logger {
+    let decorator = slog_term::TermDecorator::new().build();
+    let drain = slog_term::FullFormat::new(decorator)
+        .use_file_location()
+        .build()
+        .fuse();
+    let drain = slog_async::Async::new(drain)
+        .overflow_strategy(OverflowStrategy::Block)
+        .chan_size(1)
+        .build()
+        .fuse();
+    Logger::root(drain, o!())
 }
