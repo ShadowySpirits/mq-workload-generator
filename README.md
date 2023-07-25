@@ -8,6 +8,8 @@ This is a tool to test rocketmq server performance.
 
 ### Local Test
 
+Download the binary from [release page](https://github.com/ShadowySpirits/mq-pressure-generator/releases). Currently only Linux and macOS are supported. For other platforms, you need to build from source on your own.
+
 Basic usage:
 
 send and receive 100 messages per second to the topic `test`:
