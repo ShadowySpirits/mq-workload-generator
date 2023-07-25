@@ -1,0 +1,13 @@
+[package]
+name = "mq-pressure"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1.68"
+lazy_static = "1.4"
+
+rocketmq = { path = "../rocketmq-clients/rust" }
