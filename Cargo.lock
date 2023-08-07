@@ -1430,7 +1430,9 @@ dependencies = [
 
 [[package]]
 name = "rocketmq"
-version = "0.1.2"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "55029cf89f5d13b1d7b21a2228b683df4fdc69b6c688c5c7213bc0cf2dfaa2b3"
 dependencies = [
  "anyhow",
  "async-trait",

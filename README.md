@@ -2,15 +2,23 @@
 
 ## Introduction
 
-This is a tool to test rocketmq server performance.
+A tool for testing the performance of Apache RocketMQ.
 
 ## Quick Start
 
-### Local Test
+### Install
+
+#### Install via cargo
+
+```shell
+cargo install mq-workload-generator
+```
+
+#### Install manually
 
 Download the binary from [release page](https://github.com/ShadowySpirits/mq-workload-generator/releases). Currently only Linux and macOS are supported. For other platforms, you need to build from source on your own.
 
-Basic usage:
+### Basic usage
 
 send and receive 100 messages per second to the topic `test`:
 
@@ -42,11 +50,17 @@ Options:
   -V, --version                      Print version
 ```
 
-### Test in Kubernetes
+### Use in Kubernetes
 
 There is a out of box kubernetes manifest file for you to deploy the workload generator in kubernetes.
 
 ```shell
-kubectl apply -f mq-workload-generator-consumer.yaml
-kubectl apply -f mq-workload-generator-producer.yaml
+kubectl apply -f deployment-consumer.yaml
+kubectl apply -f deployment-producer.yaml
 ```
+
+## TODO
+
+- [] Add more metrics: send/receive latency, etc.
+- [] Add more test cases: send/receive with large message or delay/transaction message.
+- [] Add more options: user specific consumer group, consume time, lag message count, etc.
