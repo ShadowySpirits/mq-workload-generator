@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: consumer
-        image: "swr.cn-east-3.myhuaweicloud.com/hello_corp/mq-workload-generator:0.1.0"
+        image: sspirits/mq-workload-generator:latest
         env:
           - name: MODE
             value: "consumer"
