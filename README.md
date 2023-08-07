@@ -16,7 +16,7 @@ cargo install mq-workload-generator
 
 #### Install manually
 
-Download the binary from [release page](https://github.com/ShadowySpirits/mq-workload-generator/releases). Currently only Linux and macOS are supported. For other platforms, you need to build from source on your own.
+Download the binary from [release page](https://github.com/ShadowySpirits/mq-workload-generator/releases). Currently, only Linux and macOS are supported. For other platforms, you need to build from source on your own.
 
 ### Basic usage
 
@@ -52,7 +52,7 @@ Options:
 
 ### Use in Kubernetes
 
-There is a out of box kubernetes manifest file for you to deploy the workload generator in kubernetes.
+There is an out-of-the-box Kubernetes manifest file available for deploying the workload generator in Kubernetes.
 
 ```shell
 kubectl apply -f deployment-consumer.yaml
@@ -61,6 +61,6 @@ kubectl apply -f deployment-producer.yaml
 
 ## TODO
 
-- [] Add more metrics: send/receive latency, etc.
-- [] Add more test cases: send/receive with large message or delay/transaction message.
-- [] Add more options: user specific consumer group, consume time, lag message count, etc.
+- [ ] Add more metrics: send/receive latency, etc.
+- [ ] Add more test cases: send/receive with large message or delay/transaction message.
+- [ ] Add more options: user-specific consumer group, consume time, lag message count, etc.
