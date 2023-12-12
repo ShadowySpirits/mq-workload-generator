@@ -14,6 +14,10 @@ pub struct PressureOption {
     #[arg(short, long)]
     pub topic: String,
 
+    /// Group used by consumer
+    #[arg(short, long, default_value = "automq_workload_generator")]
+    pub group: String,
+
     /// Number of the client
     #[arg(short, long, default_value_t = 1)]
     pub parallelism: i32,
@@ -33,6 +37,10 @@ pub struct PressureOption {
     /// Secret Key to the topic
     #[arg(long, default_value = "")]
     pub secret_key: String,
+
+    /// Print detail error
+    #[arg(short, long, default_value_t = false)]
+    pub verbose: bool,
 }
 
 pub(crate) fn terminal_logger() -> Logger {

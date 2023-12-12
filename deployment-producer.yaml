@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mq-workload-generator-producer
-  namespace: automq-tenant-default
+  namespace: ros
 spec:
-  replicas: 2
+  replicas: 0
   selector:
     matchLabels:
       app.kubernetes.io/component: producer
@@ -22,16 +22,18 @@ spec:
           - name: MODE
             value: "producer"
           - name: PARALLELISM
-            value: "16"
+            value: "1"
           - name: QPS
-            value: "1000"
+            value: "500"
           - name: ACCESS_POINT
-            value: "svc-rocketmq-default-qmotudcabw-rocketmq5-proxy-internal:8080"
+            value: "automq-for-rocketmq-broker:8081"
           - name: TOPIC
-            value: "performance_test"
+            value: "long_running"
+          - name: GROUP
+            value: "automq_workload_generator"
           - name: ACCESS_KEY
             value: "dQy7poTQyS"
           - name: SECRET_KEY
             value: "LWghSS7fPWKRvOVvPHaG"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
       restartPolicy: Always

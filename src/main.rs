@@ -126,7 +126,9 @@ async fn start_producer(logger: &Logger, option: &PressureOption, rate_limiter: 
             .unwrap();
         let result = producer.send(message).await;
         if let Err(error) = result {
-            error!(logger, "send message failed: {:?}", error)
+            if option.verbose {
+                error!(logger, "send message failed: {:?}", error)
+            }
         }
     }
 }
@@ -134,7 +136,7 @@ async fn start_producer(logger: &Logger, option: &PressureOption, rate_limiter: 
 async fn start_consumer(logger: &Logger, option: &PressureOption) {
     let mut consumer_option = SimpleConsumerOption::default();
     consumer_option.set_logging_format(LoggingFormat::Terminal);
-    consumer_option.set_consumer_group("automq_workload_generator");
+    consumer_option.set_consumer_group(option.group.clone());
     consumer_option.set_topics(vec![option.topic.clone()]);
 
     let mut client_option = ClientOption::default();
@@ -151,14 +153,18 @@ async fn start_consumer(logger: &Logger, option: &PressureOption) {
     loop {
         let result = consumer.receive(option.topic.clone(), &FilterExpression::new(FilterType::Tag, "*")).await;
         if let Err(error) = result {
-            error!(logger, "receive message failed: {:?}", error)
+            if option.verbose {
+                error!(logger, "receive message failed: {:?}", error)
+            }
         } else {
             let message_vec = result.unwrap();
             RECIEVE_COUNT.fetch_add(message_vec.len(), Ordering::Relaxed);
             for message in message_vec {
                 let result = consumer.ack(&message).await;
                 if let Err(error) = result {
-                    error!(logger, "ack message {} failed: {:?}", message.message_id(), error)
+                    if option.verbose {
+                        error!(logger, "ack message {} failed: {:?}", message.message_id(), error)
+                    }
                 }
             }
         }

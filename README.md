@@ -36,16 +36,20 @@ Jul 25 10:38:47.205 INFO[src/main.rs:82:17] current send tps: 100, receive tps: 
 All available options:
 
 ```shell
+A tool for testing the performance of Apache RocketMQ
+
 Usage: mq-workload-generator [OPTIONS] --topic <TOPIC>
 
 Options:
   -a, --access-point <ACCESS_POINT>  Access point of the mq cluster [default: localhost:8081]
   -t, --topic <TOPIC>                Target topic
+  -g, --group <GROUP>                Group used by consumer [default: automq_workload_generator]
   -p, --parallelism <PARALLELISM>    Number of the client [default: 1]
   -q, --qps <QPS>                    Send tps of the sum of all producers [default: 100]
       --mode <MODE>                  Mode of the workload test, available values: producer, consumer, producer_and_consumer [default: producer_and_consumer]
       --access-key <ACCESS_KEY>      Access Key to the topic [default: ]
       --secret-key <SECRET_KEY>      Secret Key to the topic [default: ]
+  -v, --verbose                      Print detail error
   -h, --help                         Print help
   -V, --version                      Print version
 ```

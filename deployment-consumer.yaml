@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mq-workload-generator-consumer
-  namespace: automq-tenant-default
+  namespace: default
 spec:
   replicas: 3
   selector:
@@ -26,9 +26,11 @@ spec:
           - name: QPS
             value: "2500"
           - name: ACCESS_POINT
-            value: "svc-rocketmq-default-qmotudcabw-rocketmq5-proxy-internal:8080"
+            value: "automq-for-rocketmq-broker:8081"
           - name: TOPIC
-            value: "performance_test"
+            value: "long_running"
+          - name: GROUP
+            value: "automq_workload_generator"
           - name: ACCESS_KEY
             value: "dQy7poTQyS"
           - name: SECRET_KEY
