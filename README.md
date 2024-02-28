@@ -1,10 +1,10 @@
-# RocketMQ Workload Generator
+# MessageQueue Workload Generator
 
 [![Crates.io][crates-image]][crates-url]
 
 ## Introduction
 
-A tool for testing the performance of Apache RocketMQ.
+A tool for testing the performance of Apache RocketMQ and Apache Kafka.
 
 ## Quick Start
 
