@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run producer and consumer" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-    <option name="command" value="run --package mq-workload-generator --bin mq-workload-generator -- -t test -p 2 -q 500 -a 10.42.0.15:8080 --access-key 4QC2RtL2QI --secret-key UVdH0Gkzh6iC2T2y4lor" />
+    <option name="command" value="run --package mq-workload-generator --bin mq-workload-generator -- -d kafka -t test -p 1 -q 100 -a localhost:9092" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <option name="emulateTerminal" value="false" />
     <option name="channel" value="DEFAULT" />
@@ -9,7 +9,6 @@
     <option name="withSudo" value="false" />
     <option name="buildTarget" value="REMOTE" />
     <option name="backtrace" value="SHORT" />
-    <envs />
     <option name="isRedirectInput" value="false" />
     <option name="redirectInputPath" value="" />
     <method v="2">

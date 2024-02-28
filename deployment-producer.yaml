@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mq-workload-generator-producer
-  namespace: ros
+  namespace: benchmark
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: producer
@@ -17,23 +17,21 @@ spec:
     spec:
       containers:
       - name: producer
-        image: sspirits/mq-workload-generator:latest
+        image: sspirits/mq-workload-generator:0.2.0
         env:
+          - name: DRIVER
+            value: "kafka"
           - name: MODE
             value: "producer"
           - name: PARALLELISM
             value: "1"
           - name: QPS
-            value: "500"
+            value: "10000"
           - name: ACCESS_POINT
-            value: "automq-for-rocketmq-broker:8081"
+            value: "localhost:9092"
           - name: TOPIC
-            value: "long_running"
+            value: "test"
           - name: GROUP
             value: "automq_workload_generator"
-          - name: ACCESS_KEY
-            value: "dQy7poTQyS"
-          - name: SECRET_KEY
-            value: "LWghSS7fPWKRvOVvPHaG"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
       restartPolicy: Always

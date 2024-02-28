@@ -1,6 +1,6 @@
 [package]
 name = "mq-workload-generator"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = [
     "SSpirits <admin@lv5.moe>",
@@ -11,13 +11,13 @@ readme = "./README.md"
 repository = "https://github.com/ShadowySpirits/mq-workload-generator"
 documentation = "https://docs.rs/mq-workload-generator"
 description = "A tool for testing the performance of Apache RocketMQ"
-keywords = ["message", "rocketmq", "test", "performance"]
+keywords = ["message", "rocketmq", "kafka", "test", "benchmark"]
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 async-trait = "0.1.68"
 lazy_static = "1.4"
-clap = { version = "4.2.4", features = ["derive"] }
+clap = { version = "4.2.4", features = ["derive", "env"] }
 leaky-bucket = "1.0.1"
 
 rustix = { version = "0.38", features = ["process"] }
@@ -32,3 +32,4 @@ slog-async = "2.7.0"
 rand = "0.8"
 
 rocketmq = "5.0.0"
+rdkafka = "0.36.2"

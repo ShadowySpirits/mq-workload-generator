@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mq-workload-generator-consumer
-  namespace: default
+  namespace: benchmark
 spec:
   replicas: 3
   selector:
@@ -17,23 +17,21 @@ spec:
     spec:
       containers:
       - name: consumer
-        image: sspirits/mq-workload-generator:latest
+        image: sspirits/mq-workload-generator:0.2.0
         env:
+          - name: DRIVER
+            value: "kafka"
           - name: MODE
             value: "consumer"
           - name: PARALLELISM
-            value: "4"
+            value: "3"
           - name: QPS
-            value: "2500"
+            value: "5000"
           - name: ACCESS_POINT
-            value: "automq-for-rocketmq-broker:8081"
+            value: "localhost:9092"
           - name: TOPIC
-            value: "long_running"
+            value: "test"
           - name: GROUP
             value: "automq_workload_generator"
-          - name: ACCESS_KEY
-            value: "dQy7poTQyS"
-          - name: SECRET_KEY
-            value: "LWghSS7fPWKRvOVvPHaG"
         imagePullPolicy: Always
       restartPolicy: Always

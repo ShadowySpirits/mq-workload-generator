@@ -6,18 +6,16 @@ use clap::Parser;
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use leaky_bucket::RateLimiter;
-use rand::Rng;
-use rocketmq::conf::{ClientOption, LoggingFormat, ProducerOption, SimpleConsumerOption};
-use rocketmq::model::common::{FilterExpression, FilterType};
-use rocketmq::model::message::MessageBuilder;
 use signal_hook::consts::{SIGHUP, SIGINT, SIGQUIT, SIGTERM};
 use signal_hook_tokio::Signals;
-use slog::{error, info, Logger};
+use slog::{error, info};
 use tokio::task::JoinSet;
 
-use crate::common::PressureOption;
+use crate::common::WorkloadOption;
 
 mod common;
+mod rmq;
+mod kafka;
 
 lazy_static! {
     static ref SEND_COUNT: AtomicUsize = AtomicUsize::new(0);
@@ -26,7 +24,7 @@ lazy_static! {
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 16)]
 async fn main() {
-    let option = PressureOption::parse();
+    let option = WorkloadOption::parse();
 
     let logger = common::terminal_logger();
     info!(logger, "Begin generating workload and wait for the server to come online...");
@@ -46,7 +44,11 @@ async fn main() {
             let option = option.clone();
             let rate_limiter = producer_rate_limiter.clone();
             join_set.spawn(async move {
-                start_producer(&logger, &option, &rate_limiter).await;
+                match option.driver.as_str() {
+                    "rocketmq" => rmq::start_producer(&logger, &option, &rate_limiter).await,
+                    "kafka" => kafka::start_producer(&logger, &option, &rate_limiter).await,
+                    _ => panic!("Unsupported driver: {}", option.driver),
+                }
             });
         }
     }
@@ -56,7 +58,11 @@ async fn main() {
             let logger = logger.clone();
             let option = option.clone();
             join_set.spawn(async move {
-                start_consumer(&logger, &option).await;
+                match option.driver.as_str() {
+                    "rocketmq" => rmq::start_consumer(&logger, &option).await,
+                    "kafka" => kafka::start_consumer(&logger, &option).await,
+                    _ => panic!("Unsupported driver: {}", option.driver),
+                }
             });
         }
     }
@@ -96,77 +102,3 @@ async fn main() {
     }
 }
 
-async fn start_producer(logger: &Logger, option: &PressureOption, rate_limiter: &RateLimiter) {
-    let mut producer_option = ProducerOption::default();
-    producer_option.set_logging_format(LoggingFormat::Terminal);
-    producer_option.set_topics(vec![option.topic.clone()]);
-
-    let mut client_option = ClientOption::default();
-    client_option.set_access_url(&option.access_point);
-    client_option.set_enable_tls(false);
-    client_option.set_access_key(&option.access_key);
-    client_option.set_secret_key(&option.secret_key);
-
-    let mut producer = rocketmq::Producer::new(producer_option, client_option.clone()).unwrap();
-    if let Err(error) = producer.start().await {
-        panic!("start producer failed: {:?}", error)
-    }
-
-    loop {
-        rate_limiter.acquire(1).await;
-        SEND_COUNT.fetch_add(1, Ordering::Relaxed);
-
-        let mut body = [0u8; 4096];
-        rand::thread_rng().fill(&mut body[..]);
-
-        let message = MessageBuilder::builder()
-            .set_topic(option.topic.clone())
-            .set_body(Vec::from(body))
-            .build()
-            .unwrap();
-        let result = producer.send(message).await;
-        if let Err(error) = result {
-            if option.verbose {
-                error!(logger, "send message failed: {:?}", error)
-            }
-        }
-    }
-}
-
-async fn start_consumer(logger: &Logger, option: &PressureOption) {
-    let mut consumer_option = SimpleConsumerOption::default();
-    consumer_option.set_logging_format(LoggingFormat::Terminal);
-    consumer_option.set_consumer_group(option.group.clone());
-    consumer_option.set_topics(vec![option.topic.clone()]);
-
-    let mut client_option = ClientOption::default();
-    client_option.set_access_url(&option.access_point);
-    client_option.set_enable_tls(false);
-    client_option.set_access_key(&option.access_key);
-    client_option.set_secret_key(&option.secret_key);
-
-    let mut consumer = rocketmq::SimpleConsumer::new(consumer_option, client_option).unwrap();
-    if let Err(error) = consumer.start().await {
-        panic!("start consumer failed: {:?}", error)
-    }
-
-    loop {
-        let result = consumer.receive(option.topic.clone(), &FilterExpression::new(FilterType::Tag, "*")).await;
-        if let Err(error) = result {
-            if option.verbose {
-                error!(logger, "receive message failed: {:?}", error)
-            }
-        } else {
-            let message_vec = result.unwrap();
-            RECIEVE_COUNT.fetch_add(message_vec.len(), Ordering::Relaxed);
-            for message in message_vec {
-                let result = consumer.ack(&message).await;
-                if let Err(error) = result {
-                    if option.verbose {
-                        error!(logger, "ack message {} failed: {:?}", message.message_id(), error)
-                    }
-                }
-            }
-        }
-    }
-}

@@ -5,4 +5,4 @@ WORKDIR /root
 COPY target/release/mq-workload-generator mq-workload-generator
 RUN apt-get update && apt-get install -y dumb-init && apt-get clean
 ENTRYPOINT ["dumb-init", "--"]
-CMD /root/mq-workload-generator --access-point ${ACCESS_POINT} --mode ${MODE} --parallelism ${PARALLELISM} --qps ${QPS} --topic ${TOPIC} --group ${GROUP} --access-key ${ACCESS_KEY} --secret-key ${SECRET_KEY}
+CMD /root/mq-workload-generator
