@@ -10,14 +10,14 @@ license-file = "LICENSE.txt"
 readme = "./README.md"
 repository = "https://github.com/ShadowySpirits/mq-workload-generator"
 documentation = "https://docs.rs/mq-workload-generator"
-description = "A tool for testing the performance of Apache RocketMQ"
+description = "A tool for testing the performance of Apache RocketMQ and Apache Kafka"
 keywords = ["message", "rocketmq", "kafka", "test", "benchmark"]
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-async-trait = "0.1.68"
+async-trait = "0.1"
 lazy_static = "1.4"
-clap = { version = "4.2.4", features = ["derive", "env"] }
+clap = { version = "4.5", features = ["derive", "env"] }
 leaky-bucket = "1.0.1"
 
 rustix = { version = "0.38", features = ["process"] }
@@ -25,11 +25,11 @@ signal-hook = "0.3"
 signal-hook-tokio = { version = "0.3", features = ["futures-v0_3"] }
 futures = "0.3"
 
-slog = { version = "2.7.0", features = ["max_level_trace", "release_max_level_info"] }
-slog-term = "2.9.0"
-slog-async = "2.7.0"
+slog = { version = "2.7", features = ["max_level_trace", "release_max_level_info"] }
+slog-term = "2.9"
+slog-async = "2.8"
 
 rand = "0.8"
 
 rocketmq = "5.0.0"
-rdkafka = "0.36.2"
+rdkafka = "0.36"

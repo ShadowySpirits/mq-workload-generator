@@ -36,22 +36,41 @@ Jul 25 10:38:47.205 INFO[src/main.rs:82:17] current send tps: 100, receive tps: 
 All available options:
 
 ```shell
-A tool for testing the performance of Apache RocketMQ
+A tool for testing the performance of Apache RocketMQ and Apache Kafka
 
 Usage: mq-workload-generator [OPTIONS] --topic <TOPIC>
 
 Options:
-  -a, --access-point <ACCESS_POINT>  Access point of the mq cluster [default: localhost:8081]
-  -t, --topic <TOPIC>                Target topic
-  -g, --group <GROUP>                Group used by consumer [default: automq_workload_generator]
-  -p, --parallelism <PARALLELISM>    Number of the client [default: 1]
-  -q, --qps <QPS>                    Send tps of the sum of all producers [default: 100]
-      --mode <MODE>                  Mode of the workload test, available values: producer, consumer, producer_and_consumer [default: producer_and_consumer]
-      --access-key <ACCESS_KEY>      Access Key to the topic [default: ]
-      --secret-key <SECRET_KEY>      Secret Key to the topic [default: ]
-  -v, --verbose                      Print detail error
-  -h, --help                         Print help
-  -V, --version                      Print version
+  -d, --driver <DRIVER>
+          Work load driver, available option: rocketmq, kafka [env: DRIVER=] [default: rocketmq]
+  -a, --access-point <ACCESS_POINT>
+          Access point of the mq cluster [env: ACCESS_POINT=] [default: localhost:8081]
+  -t, --topic <TOPIC>
+          Target topic [env: TOPIC=]
+  -g, --group <GROUP>
+          Group used by consumer [env: GROUP=] [default: mq_workload_generator]
+  -p, --parallelism <PARALLELISM>
+          Number of the client [env: PARALLELISM=] [default: 1]
+  -q, --qps <QPS>
+          Send tps of the sum of all producers [env: QPS=] [default: 100]
+      --min-payload-size <MIN_PAYLOAD_SIZE>
+          Minimum message payload size, measured in bytes [env: MIN_PAYLOAD_SIZE=]
+      --max-payload-size <MAX_PAYLOAD_SIZE>
+          Maximum message payload size, measured in bytes [env: MAX_PAYLOAD_SIZE=]
+      --payload-size <PAYLOAD_SIZE>
+          Fixed message payload size, measured in bytes. The priority is given to the dynamic payload size, which ranges from **min_payload_size** to **max_payload_size** [env: PAYLOAD_SIZE=] [default: 4096]
+      --mode <MODE>
+          Mode of the workload test, available values: producer, consumer, producer_and_consumer [env: MODE=] [default: producer_and_consumer]
+      --access-key <ACCESS_KEY>
+          Access Key to the topic [env: ACCESS_KEY=] [default: ]
+      --secret-key <SECRET_KEY>
+          Secret Key to the topic [env: SECRET_KEY=] [default: ]
+  -v, --verbose
+          Print detail error [env: VERBOSE=]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
 ```
 
 ### Use in Kubernetes
@@ -59,12 +78,14 @@ Options:
 There is an out-of-the-box Kubernetes manifest file available for deploying the workload generator in Kubernetes.
 
 ```shell
+kubectl create namespace benchmark
 kubectl apply -f deployment-consumer.yaml
 kubectl apply -f deployment-producer.yaml
 ```
 
 ## TODO
 
+- [x] Add more options: user-specific consumer group, consume time, lag message count, etc.
+- [x] Support more platform: Apache Kafka, etc.
 - [ ] Add more metrics: send/receive latency, etc.
 - [ ] Add more test cases: send/receive with large message or delay/transaction message.
-- [ ] Add more options: user-specific consumer group, consume time, lag message count, etc.
