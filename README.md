@@ -1,5 +1,7 @@
 # RocketMQ Workload Generator
 
+[![Crates.io][crates-image]][crates-url]
+
 ## Introduction
 
 A tool for testing the performance of Apache RocketMQ.
@@ -89,3 +91,6 @@ kubectl apply -f deployment-producer.yaml
 - [x] Support more platform: Apache Kafka, etc.
 - [ ] Add more metrics: send/receive latency, etc.
 - [ ] Add more test cases: send/receive with large message or delay/transaction message.
+
+[crates-image]: https://img.shields.io/crates/v/mq-workload-generator.svg
+[crates-url]: https://crates.io/crates/mq-workload-generator
