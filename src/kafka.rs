@@ -15,7 +15,7 @@ use crate::common::{gen_payload, WorkloadOption};
 
 pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rate_limiter: &RateLimiter) {
     let producer: FutureProducer = ClientConfig::new()
-        .set("bootstrap.servers", &option.access_point)
+        .set("bootstrap.servers", option.access_point())
         .set("linger.ms", "5")
         .set("batch.size", "1048576") // 1MB
         .create()
@@ -25,13 +25,13 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
 
     loop {
         rate_limiter.acquire(1).await;
-        SEND_COUNT.fetch_add(1, Ordering::Relaxed);
 
         let producer_clone = producer.clone();
         let logger_clone = logger.clone();
         let topic = option.topic.to_string();
         let verbose = option.verbose;
         let payload_size_range_clone = payload_size_range.clone();
+        
         tokio::spawn(async move {
             let payload = gen_payload(thread_rng(), payload_size_range_clone);
             let message: FutureRecord<'_, (), [u8]> = FutureRecord::to(&topic)
@@ -41,6 +41,8 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
                 if verbose {
                     error!(logger_clone, "send message failed: {:?}", error)
                 }
+            } else {
+                SEND_COUNT.fetch_add(1, Ordering::Relaxed);
             }
         });
     }
@@ -49,7 +51,7 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
 pub(crate) async fn start_consumer(logger: &Logger, option: &WorkloadOption) {
     let consumer: StreamConsumer = ClientConfig::new()
         .set("group.id", &option.group)
-        .set("bootstrap.servers", &option.access_point)
+        .set("bootstrap.servers", option.access_point())
         .set("enable.partition.eof", "false")
         .set("session.timeout.ms", "6000")
         .set("enable.auto.commit", "true")

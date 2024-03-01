@@ -16,7 +16,7 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
     producer_option.set_topics(vec![option.topic.clone()]);
 
     let mut client_option = ClientOption::default();
-    client_option.set_access_url(&option.access_point);
+    client_option.set_access_url(option.access_point());
     client_option.set_enable_tls(false);
     client_option.set_access_key(&option.access_key);
     client_option.set_secret_key(&option.secret_key);
@@ -30,7 +30,6 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
 
     loop {
         rate_limiter.acquire(1).await;
-        SEND_COUNT.fetch_add(1, Ordering::Relaxed);
 
         let payload = gen_payload(thread_rng(), payload_size_range.clone());
 
@@ -44,6 +43,8 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
             if option.verbose {
                 error!(logger, "send message failed: {:?}", error)
             }
+        } else {
+            SEND_COUNT.fetch_add(1, Ordering::Relaxed);
         }
     }
 }
@@ -55,7 +56,7 @@ pub(crate) async fn start_consumer(logger: &Logger, option: &WorkloadOption) {
     consumer_option.set_topics(vec![option.topic.clone()]);
 
     let mut client_option = ClientOption::default();
-    client_option.set_access_url(&option.access_point);
+    client_option.set_access_url(option.access_point());
     client_option.set_enable_tls(false);
     client_option.set_access_key(&option.access_key);
     client_option.set_secret_key(&option.secret_key);

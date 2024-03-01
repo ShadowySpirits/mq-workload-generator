@@ -11,12 +11,12 @@ use slog_async::OverflowStrategy;
 #[command(author, version, about, long_about = None)]
 pub struct WorkloadOption {
     /// Work load driver, available option: rocketmq, kafka
-    #[arg(short, long, env, default_value = "rocketmq")]
+    #[arg(short, long, env, default_value = "kafka")]
     pub driver: String,
 
-    /// Access point of the mq cluster
-    #[arg(short, long, env, default_value = "localhost:8081")]
-    pub access_point: String,
+    /// Access point of the mq cluster, default is localhost:8081 for RocketMQ and localhost:9092 for Kafka
+    #[arg(short, long, env)]
+    pub access_point: Option<String>,
 
     /// Target topic
     #[arg(short, long, env)]
@@ -73,6 +73,18 @@ impl WorkloadOption {
         }
         default
     }
+    
+    pub(crate) fn access_point(&self) -> &str {
+        if let Some(access_point) = &self.access_point {
+            access_point
+        } else { 
+            match self.driver.as_str() { 
+                "rocketmq" => "localhost:8081",
+                "kafka" => "localhost:9092",
+                _ => panic!("Unsupported driver")
+            }
+        }
+    }
 }
 
 pub(crate) fn terminal_logger() -> Logger {
@@ -88,7 +100,6 @@ pub(crate) fn terminal_logger() -> Logger {
         .fuse();
     Logger::root(drain, o!())
 }
-
 
 pub(crate) fn gen_payload(mut rng: ThreadRng, payload_size_range: Range<usize>) -> Vec<u8> {
     let body_size = rng.gen_range(payload_size_range);

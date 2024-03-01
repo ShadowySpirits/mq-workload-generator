@@ -25,9 +25,11 @@ Download the binary from [release page](https://github.com/ShadowySpirits/mq-wor
 send and receive 100 messages per second to the topic `test`:
 
 ```shell
+# To set a parameter, choose either the CLI or ENV mode.
+export ACCESS_POINT=localhost:9092
 mq-workload-generator --topic test --qps 100
 # example output: 
-# this tool will print the current send and receive tps every second
+# this tool will print the current send and receive tps every second.
 Jul 25 10:38:44.203 INFO[src/main.rs:32:5] Begin generating workload and wait for the server to come online...
 Jul 25 10:38:44.204 INFO[src/main.rs:82:17] current send tps: 100, receive tps: 100
 Jul 25 10:38:45.206 INFO[src/main.rs:82:17] current send tps: 100, receive tps: 100
@@ -44,9 +46,9 @@ Usage: mq-workload-generator [OPTIONS] --topic <TOPIC>
 
 Options:
   -d, --driver <DRIVER>
-          Work load driver, available option: rocketmq, kafka [env: DRIVER=] [default: rocketmq]
+          Work load driver, available option: rocketmq, kafka [env: DRIVER=] [default: kafka]
   -a, --access-point <ACCESS_POINT>
-          Access point of the mq cluster [env: ACCESS_POINT=] [default: localhost:8081]
+          Access point of the mq cluster, default is localhost:8081 for RocketMQ and localhost:9092 for Kafka [env: ACCESS_POINT=]
   -t, --topic <TOPIC>
           Target topic [env: TOPIC=]
   -g, --group <GROUP>
@@ -87,8 +89,8 @@ kubectl apply -f deployment-producer.yaml
 
 ## TODO
 
-- [x] Add more options: user-specific consumer group, consume time, lag message count, etc.
-- [x] Support more platform: Apache Kafka, etc.
+- [x] Add more options: user-specific consumer group, payload size, consume time, lag message count, etc.
+- [x] Support more platform: Apache Kafka.
 - [ ] Add more metrics: send/receive latency, etc.
 - [ ] Add more test cases: send/receive with large message or delay/transaction message.
 
