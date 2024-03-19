@@ -30,13 +30,23 @@ pub(crate) async fn start_producer(logger: &Logger, option: &WorkloadOption, rat
         let logger_clone = logger.clone();
         let topic = option.topic.to_string();
         let verbose = option.verbose;
+        let key_size = option.key_size;
         let payload_size_range_clone = payload_size_range.clone();
         
         tokio::spawn(async move {
             let payload = gen_payload(thread_rng(), payload_size_range_clone);
-            let message: FutureRecord<'_, (), [u8]> = FutureRecord::to(&topic)
+
+            let message: FutureRecord<'_, [u8], [u8]> = FutureRecord::to(&topic)
                 .payload(payload.to_bytes());
-            let result = producer_clone.send(message, Duration::from_secs(0)).await;
+
+            let result = if let Some(size) = key_size {
+                let key = gen_payload(thread_rng(), size..size + 1);
+                let message = message.key(key.to_bytes());
+                producer_clone.send(message, Duration::from_secs(0)).await
+            } else {
+                producer_clone.send(message, Duration::from_secs(0)).await
+            };
+
             if let Err(error) = result {
                 if verbose {
                     error!(logger_clone, "send message failed: {:?}", error)

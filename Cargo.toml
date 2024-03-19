@@ -1,6 +1,6 @@
 [package]
 name = "mq-workload-generator"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 authors = [
     "SSpirits <admin@lv5.moe>",
