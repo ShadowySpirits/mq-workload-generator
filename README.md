@@ -57,6 +57,8 @@ Options:
           Number of the client [env: PARALLELISM=] [default: 1]
   -q, --qps <QPS>
           Send tps of the sum of all producers [env: QPS=] [default: 100]
+      --key-size <KEY_SIZE>
+          Random key with specified size for each record sent by producer [env: KEY_SIZE=]
       --min-payload-size <MIN_PAYLOAD_SIZE>
           Minimum message payload size, measured in bytes [env: MIN_PAYLOAD_SIZE=]
       --max-payload-size <MAX_PAYLOAD_SIZE>

@@ -34,6 +34,10 @@ pub struct WorkloadOption {
     #[arg(short, long, env, default_value_t = 100)]
     pub qps: usize,
 
+    /// Random key with specified size for each record sent by producer
+    #[arg(long, env)]
+    pub key_size: Option<usize>,
+
     /// Minimum message payload size, measured in bytes
     #[arg(long, env)]
     pub min_payload_size: Option<usize>,
@@ -68,17 +72,17 @@ impl WorkloadOption {
         let default = self.payload_size..self.payload_size + 1;
         if let (Some(min_payload_size), Some(max_payload_size)) = (self.min_payload_size, self.max_payload_size) {
             if max_payload_size > min_payload_size {
-                return min_payload_size..max_payload_size
+                return min_payload_size..max_payload_size;
             }
         }
         default
     }
-    
+
     pub(crate) fn access_point(&self) -> &str {
         if let Some(access_point) = &self.access_point {
             access_point
-        } else { 
-            match self.driver.as_str() { 
+        } else {
+            match self.driver.as_str() {
                 "rocketmq" => "localhost:8081",
                 "kafka" => "localhost:9092",
                 _ => panic!("Unsupported driver")

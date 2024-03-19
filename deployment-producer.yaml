@@ -26,12 +26,12 @@ spec:
           - name: PARALLELISM
             value: "1"
           - name: QPS
-            value: "10000"
+            value: "1000"
           - name: ACCESS_POINT
             value: "localhost:9092"
           - name: TOPIC
             value: "test"
-          - name: GROUP
-            value: "automq_workload_generator"
+          - name: KEY_SIZE
+            value: "128"
         imagePullPolicy: Always
       restartPolicy: Always
